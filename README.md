@@ -1,65 +1,77 @@
 # Projeto de Chat Peer-to-Peer (P2P)
 
-Implementação de um sistema de chat distribuído com arquitetura P2P para a disciplina de Sistemas Distribuídos, Concorrência e Paralelismo.
+Implementação de um sistema de chat distribuído com arquitetura P2P para a disciplina de **Fundamentos da Computação Concorrente, Paralela e Distribuída**.
 
 ## Descrição
 
-Este projeto é uma aplicação de chat em linha de comando que opera de forma descentralizada. Diferente de um modelo cliente-servidor tradicional, não há um servidor central; cada participante da rede (chamado de "peer" ou "nó") atua simultaneamente como cliente e servidor.
+Este projeto é uma aplicação de chat em linha de comando que opera de forma descentralizada.  
+Diferente de um modelo cliente-servidor tradicional, não há servidor central: cada participante da rede (chamado de *peer* ou *nó*) atua simultaneamente como cliente e servidor.
 
-A aplicação demonstra conceitos fundamentais de sistemas distribuídos, como comunicação via sockets, gerenciamento de estado distribuído (lista de pares) e concorrência através de multithreading.
+A aplicação demonstra conceitos fundamentais de sistemas distribuídos, como comunicação via sockets, gerenciamento de estado distribuído (lista de pares) concorrência através de multithreading, paralelismo, sincronização e comunicação entre processos via fila(Queue).
 
 ## Funcionalidades Principais
 
-* **Arquitetura P2P Real:** Cada instância do programa é um nó autônomo na rede.
-* **Concorrência com Threads:** Uso intensivo da biblioteca `threading` do Python para:
-    * Escutar por novas conexões de peers.
-    * Gerenciar múltiplas conexões ativas simultaneamente.
-    * Permitir que o usuário envie e receba mensagens ao mesmo tempo.
-* **Comunicação via Sockets TCP:** A base da comunicação entre os nós é feita utilizando sockets TCP para garantir a entrega das mensagens.
-* **Protocolo de Mensagem Simples:** As mensagens são formatadas com um identificador de remetente (`remetente|conteúdo`) para que os usuários saibam quem enviou cada mensagem.
-* **Mecanismo de Broadcast (Flooding):** Uma mensagem enviada por um nó é retransmitida para todos os seus vizinhos, garantindo que a mensagem se espalhe por toda a rede.
+- **Arquitetura P2P:** Cada instância do programa é um nó autônomo.  
+- **Concorrência com Threads:**  
+  - Escuta por novas conexões.  
+  - Gerencia múltiplos peers conectados simultaneamente.  
+  - Consome mensagens da fila interna para envio.  
+- **Paralelismo com Processos:**  
+  - O input do usuário roda em um processo separado, permitindo paralelismo real em múltiplos núcleos de CPU.  
+- **Sincronização:**  
+  - Uso de `threading.Lock` para garantir acesso seguro ao dicionário de peers.  
+- **Comunicação entre Processos/Threads:**  
+  - Uso de `multiprocessing.Queue` para enviar mensagens do processo de input para as threads que fazem broadcast.  
+- **Mensagens Identificadas:**  
+  - Cada mensagem inclui nome e host:porta do remetente.  
+- **Broadcast (Flooding):**  
+  - Toda mensagem é retransmitida para todos os peers conectados.  
 
 ## Pré-requisitos
 
-* Python 3.6 ou superior.
-* Nenhuma biblioteca externa é necessária (apenas bibliotecas padrão do Python são utilizadas).
+- Python **3.6+**  
+- Nenhuma biblioteca externa (apenas bibliotecas padrão do Python).  
 
 ## Como Executar
 
-A aplicação é executada a partir do terminal. A topologia da rede é formada dinamicamente, conectando um novo nó a um nó que já está online.
+A aplicação é executada pelo terminal.  
+Agora o usuário também precisa escolher um **nome** para se identificar no chat.  
 
-A sintaxe do comando é:
 ```sh
-python peer_final.py <SEU_HOST> <SUA_PORTA> [HOST_DO_PEER_EXISTENTE] [PORTA_DO_PEER_EXISTENTE]
-```
-* `<SEU_HOST>`: O endereço de host que este peer usará (ex: `localhost`).
-* `<SUA_PORTA>`: A porta em que este peer escutará por conexões (ex: `9001`).
-* `[HOST_DO_PEER_EXISTENTE]` (Opcional): O host de um peer já na rede ao qual você deseja se conectar.
-* `[PORTA_DO_PEER_EXISTENTE]` (Opcional): A porta do peer já na rede.
-
-### Exemplo de Uso com 3 Peers
-
-Para testar a rede, abra três terminais diferentes:
-
-**1. Terminal 1 - Iniciar o primeiro Peer (Nó de Bootstrap):**
-Este peer apenas escutará por conexões.
-```sh
-python peer_final.py localhost 9000
+python peer.py <SEU_HOST> <SUA_PORTA> <SEU_NOME> [HOST_DO_PEER_EXISTENTE] [PORTA_DO_PEER_EXISTENTE]
 ```
 
-**2. Terminal 2 - Iniciar o segundo Peer:**
-Este peer escutará na porta `9001` e se conectará ao primeiro peer na porta `9000`.
+- `<SEU_HOST>`: IP ou `localhost`  
+- `<SUA_PORTA>`: porta local em que o peer vai escutar  
+- `<SEU_NOME>`: nome que será exibido no chat  
+- `[HOST_DO_PEER_EXISTENTE]` e `[PORTA_DO_PEER_EXISTENTE]` (opcionais): peer já online ao qual se conectar  
+
+---
+
+### Exemplo com 3 Peers
+
+**1. Primeiro Peer (Bootstrap):**
 ```sh
-python peer_final.py localhost 9001 localhost 9000
+python peer.py 127.0.0.1 5000 Julia
 ```
 
-**3. Terminal 3 - Iniciar o terceiro Peer:**
-Este peer escutará na porta `9002` e se conectará ao segundo peer na porta `9001`, formando uma cadeia.
+**2. Segundo Peer (conectando ao primeiro):**
 ```sh
-python peer_final.py localhost 9002 localhost 9001
+python peer.py 127.0.0.1 5001 Pedro 127.0.0.1 5000
 ```
 
-Agora, a rede está formada. Qualquer mensagem digitada em um dos terminais será retransmitida para todos os outros, com a identificação de quem a enviou.
+**3. Terceiro Peer (conectando ao segundo):**
+```sh
+python peer.py 127.0.0.1 5002 Ana 127.0.0.1 5001
+```
 
+Saída esperada ao trocar mensagens (Terminal de Julia):  
+```
+Você: ola      
+[Pedro (127.0.0.1:5001) disse]: ola                                               
+[Ana (127.0.0.1:5002) disse]: oi
+```
+
+---
 
 ᓚᘏᗢ
