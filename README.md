@@ -20,8 +20,6 @@ A aplicação demonstra conceitos fundamentais de sistemas distribuídos, como c
   - O input do usuário roda em um processo separado, permitindo paralelismo real em múltiplos núcleos de CPU.  
 - **Sincronização:**  
   - Uso de `threading.Lock` para garantir acesso seguro ao dicionário de peers.  
-- **Comunicação entre Processos/Threads:**  
-  - Uso de `multiprocessing.Queue` para enviar mensagens do processo de input para as threads que fazem broadcast.  
 - **Mensagens Identificadas:**  
   - Cada mensagem inclui nome e host:porta do remetente.  
 - **Broadcast (Flooding):**  
