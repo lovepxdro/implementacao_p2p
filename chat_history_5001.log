@@ -1,0 +1,9 @@
+
+=== Nova sessão iniciada ===
+[2025-09-29T15:17:31] Peer inicializado e pronto para mensagens.
+[2025-09-29T15:17:31] Conexão estabelecida com ('127.0.0.1', 5000)
+[2025-09-29T15:17:31] Conectado manualmente a 127.0.0.1:5000
+[2025-09-29T15:17:39] Mensagem recebida de Alice (127.0.0.1:5000): a
+[2025-09-29T15:17:41] Mensagem local enviada: a
+[2025-09-29T15:17:48] Mensagem recebida de Alice (127.0.0.1:5000): KKKKKKKKKKKKK
+[2025-09-29T15:25:25] Conexão encerrada com ('127.0.0.1', 5000)

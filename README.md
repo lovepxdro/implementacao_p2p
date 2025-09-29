@@ -17,13 +17,16 @@ A aplicação demonstra conceitos fundamentais de sistemas distribuídos, como c
   - Gerencia múltiplos peers conectados simultaneamente.  
   - Consome mensagens da fila interna para envio.  
 - **Paralelismo com Processos:**  
-  - O input do usuário roda em um processo separado, permitindo paralelismo real em múltiplos núcleos de CPU.  
+  - Processo dedicado (`log_worker`) grava o histórico de eventos em disco em paralelo à execução principal.  
 - **Sincronização:**  
   - Uso de `threading.Lock` para garantir acesso seguro ao dicionário de peers.  
 - **Mensagens Identificadas:**  
   - Cada mensagem inclui nome e host:porta do remetente.  
 - **Broadcast (Flooding):**  
   - Toda mensagem é retransmitida para todos os peers conectados.  
+- **Interface CLI Amigável:**  
+  - Prompt interativo (`nome> `).  
+  - Comandos para listar peers, conectar, encerrar e exibir ajuda.  
 
 ## Pré-requisitos
 
@@ -69,5 +72,32 @@ Você: ola
 [Pedro (127.0.0.1:5001) disse]: ola                                               
 [Ana (127.0.0.1:5002) disse]: oi
 ```
+
+## Histórico de Mensagens
+
+Cada peer cria/atualiza automaticamente um arquivo `chat_history_<porta>.log` na
+mesma pasta do projeto. O arquivo registra:
+
+- Início e fim da sessão.
+- Conexões e desconexões de peers.
+- Mensagens enviadas e recebidas.
+
+Isso demonstra a comunicação entre threads (fila de mensagens) e processos
+(fila de log) e facilita a auditoria das interações.
+
+## Comandos da Interface CLI
+
+Enquanto a aplicação está rodando, você pode utilizar comandos especiais:
+
+| Comando | Descrição |
+|---------|-----------|
+| `/help` | Mostra a lista de comandos disponíveis. |
+| `/connect HOST PORT` | Conecta dinamicamente a outro peer ativo. |
+| `/peers` | Exibe os peers atualmente conectados a você. |
+| `/quit` | Encerra o peer local de forma graciosa. |
+
+Qualquer texto que não comece com `/` é enviado imediatamente como mensagem para a
+rede. A dica aparece no prompt assim que o peer sobe: *“Interface pronta. Digite
+/help para ver os comandos disponíveis.”*
 
 ᓚᘏᗢ
